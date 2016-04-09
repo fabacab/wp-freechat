@@ -1,0 +1,21 @@
+#freechat-client-container {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    width: 400px;
+    background: red;
+}
+
+#freechat-rooms-container {
+    position: fixed;
+    bottom: 0;
+}
+
+.freechat-room {
+    float: right;
+    width: 200px;
+    max-height: 400px;
+    overflow-y: scroll;
+
+    background: yellow;
+}
