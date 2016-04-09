@@ -2,20 +2,40 @@
     position: fixed;
     bottom: 0;
     right: 0;
-    width: 400px;
-    background: red;
+    width: 200px;
+    background: inherit;
+    border-width: 1px 0 0 1px;
+    border-color: #000;
+    border-style: solid;
 }
 
 #freechat-rooms-container {
     position: fixed;
     bottom: 0;
+    right: 200px;
+    width: calc(100vw - 200px);
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: flex-end;
 }
 
 .freechat-room {
-    float: right;
+    display: table;
+    margin-right: 20px;
+    border: 1px solid black;
     width: 200px;
+    background: white;
+}
+
+.freechat-room header {
+    background: silver;
+}
+
+.freechat-room .freechat-room-messages {
     max-height: 400px;
     overflow-y: scroll;
+}
 
-    background: yellow;
+.freechat-room .freechat-close-button {
+    float: right;
 }

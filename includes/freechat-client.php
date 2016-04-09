@@ -22,15 +22,18 @@
 
             <header>
                 <h1 class="freechat-room-name">
-                    <span><?php esc_html_e('Chat Room Name' ,'wp-freechat');?></span>
                     <button class="freechat-close-button">&times;</button>
+                    <span><?php esc_html_e('Chat Room Name' ,'wp-freechat');?></span>
                 </h1>
             </header>
 
-            <ul>
+            <ul class="freechat-room-messages">
             </ul>
 
-            <textarea placeholder="<?php esc_attr_e('Type message here', 'wp-freechat');?>"></textarea>
+            <textarea
+                placeholder="<?php esc_attr_e('Type message here', 'wp-freechat');?>"
+                rows="1"
+            ></textarea>
             <button class="freechat-send-button"><?php esc_html_e('Send', 'wp-freechat');?></button>
 
         </div>
