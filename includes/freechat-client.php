@@ -27,20 +27,25 @@
                 </h1>
             </header>
 
-            <ul class="freechat-room-messages">
-            </ul>
+            <div class="freechat-room-body">
 
-            <textarea
-                placeholder="<?php esc_attr_e('Type message here', 'wp-freechat');?>"
-                rows="1"
-            ></textarea>
-            <button class="freechat-send-button"><?php esc_html_e('Send', 'wp-freechat');?></button>
+                <ul class="freechat-room-messages">
+                </ul>
+
+                <textarea
+                    placeholder="<?php esc_attr_e('Type message here', 'wp-freechat');?>"
+                    rows="1"
+                ></textarea>
+                <button class="freechat-send-button"><?php esc_html_e('Send', 'wp-freechat');?></button>
+
+            </div>
 
         </div>
     </template><!-- #freechat-room-template -->
 
     <template id="freechat-message-template">
         <li>
+            <?php print get_avatar(0, 48);?>
             <span><?php esc_html_e('Sender Name', 'wp-freechat');?></span>
             <p><?php esc_html_e('Chat message here.', 'wp-freechat');?></p>
         </li>

@@ -22,7 +22,9 @@
 .freechat-room {
     display: table;
     margin-right: 20px;
-    border: 1px solid black;
+    border-width: 1px 1px 0 1px;
+    border-color: #000;
+    border-style: solid;
     width: 200px;
     background: white;
 }
