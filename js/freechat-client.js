@@ -19,6 +19,18 @@ var WP_FREECHAT = (function () {
     var Rooms;
 
     /**
+     * The `admin-ajax.php` endpoint.
+     */
+    var ajaxurl = ajaxurl || freechat_client_vars.ajaxurl;
+
+    /**
+     * The source of chat events.
+     *
+     * @type {EventSource}
+     */
+    var event_source;
+
+    /**
      * Attaches event handlers during initialization.
      */
     var initHandlers = function () {
@@ -26,9 +38,6 @@ var WP_FREECHAT = (function () {
         jQuery('#freechat-rooms-container').on('click', '.freechat-close-button', closeRoom);
         jQuery('#freechat-rooms-container').on('click', '.freechat-send-button', handleSend);
         jQuery('#freechat-rooms-container').on('click', '.freechat-room header', toggleRoom);
-
-        document.getElementById('freechat-rooms-container')
-            .addEventListener('freechat.room.opened', loadMessages);
     };
 
     /**
@@ -110,6 +119,9 @@ var WP_FREECHAT = (function () {
         jQuery('#freechat-rooms-list-container > ul').replaceWith(el);
     };
 
+    /**
+     * Opens a single room. Maybe subscribes to event stream.
+     */
     var openRoom = function (e) {
         var t = document.getElementById('freechat-room-template');
         jQuery(t.content.querySelector('.freechat-room')).attr('data-id', jQuery(this).data('id'));
@@ -120,8 +132,74 @@ var WP_FREECHAT = (function () {
         el.dispatchEvent(new Event('freechat.room.opened', {
             'bubbles': true
         }));
+        connectSource();
     };
 
+    /**
+     * (Re-)Connects to an HTML5 SSE event stream.
+     */
+    var connectSource = function (url) {
+        if (event_source) {
+            event_source.removeEventListener('freechat.new.comments', handleNewMessages);
+            event_source.close();
+        }
+        var es_query = getEventSourceQuery();
+        event_source = new EventSource(ajaxurl + '?action=freechat_eventstream' + es_query);
+        event_source.addEventListener('freechat.new.comments', handleNewMessages);
+    };
+
+    /**
+     * Receives new event data from an event stream.
+     */
+    var handleNewMessages = function (e) {
+        JSON.parse(e.data).forEach(function (comment, index, array) {
+            appendMessage(null, comment);
+        });
+    };
+
+    /**
+     * Constructs an appropriate query string for subscribing to an event stream.
+     *
+     * @return {String}
+     */
+    var getEventSourceQuery = function () {
+        var querystring = '';
+        var offset = 0;
+        getOpenRooms().forEach(function (room_id) {
+            querystring += '&post__in[]=' + encodeURIComponent(room_id);
+            offset += countMessages(room_id);
+        });
+        querystring += '&offset=' + offset;
+        return querystring;
+    };
+
+    /**
+     * Gets open rooms.
+     *
+     * @return {Array}
+     */
+    var getOpenRooms = function () {
+        var open_rooms = [];
+        jQuery('#freechat-rooms-container .freechat-room').each(function () {
+            open_rooms.push(jQuery(this).data('id'));
+        });
+        return open_rooms;
+    };
+
+    /**
+     * Counts the number of messages in a given room.
+     *
+     * @param {String} Numeric string.
+     *
+     * @return {Number}
+     */
+    var countMessages = function (room_id) {
+        return jQuery('.freechat-room[data-id="' + room_id + '"] .freechat-room-messages li').length;
+    };
+
+    /**
+     * Closes a single room.
+     */
     var closeRoom = function (e) {
         jQuery(this).parents('.freechat-room').remove();
     };
@@ -137,29 +215,9 @@ var WP_FREECHAT = (function () {
         };
         var comment = new wp.api.models.Comment(msg);
         comment.save({}, {
-            'success': appendMessage,
             'error': showErrorNotice
         });
         room.find('textarea').val('');
-    };
-
-    /**
-     * Gets initial messages when a room is opened.
-     */
-    var loadMessages = function (e) {
-        var c = new wp.api.collections.Comments();
-        c.fetch({
-            'data': {
-                'post': jQuery(e.target).data('id'),
-                'order': 'DESC'
-            },
-            'success': function (collection, response, options) {
-                response.reverse().forEach(function (comment) {
-                    appendMessage(null, comment);
-                });
-            },
-            'error': showErrorNotice
-        });
     };
 
     /**

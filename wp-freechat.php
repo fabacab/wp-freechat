@@ -84,9 +84,11 @@ class WP_FreeChat {
     public static function initialize () {
         require_once 'includes/class-wp-freechat-chat-room.php';
         require_once 'includes/class-wp-freechat-chat-client.php';
+        require_once 'includes/class-wp-freechat-eventstream-server.php';
 
         WP_FreeChat_Chat_Room::register();
         WP_FreeChat_Chat_Client::register();
+        WP_FreeChat_EventStream_Server::register();
     }
 
     /**

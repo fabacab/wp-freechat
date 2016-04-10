@@ -40,6 +40,7 @@ class WP_FreeChat_Chat_Client {
             array('jquery', 'wp-api')
         );
         wp_localize_script('freechat-client', 'freechat_client_vars', array(
+            'ajaxurl' => admin_url('admin-ajax.php'),
         ));
         wp_enqueue_script('freechat-client');
     }
