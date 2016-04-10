@@ -21,6 +21,7 @@ class WP_FreeChat_EventStream_Server {
      */
     public static function register () {
         add_action('wp_ajax_freechat_eventstream', array(__CLASS__, 'serveEventStream'));
+        add_action('wp_ajax_nopriv_freechat_eventstream', array(__CLASS__, 'serveEventStream'));
     }
 
     /**
@@ -39,13 +40,18 @@ class WP_FreeChat_EventStream_Server {
         $offset = 0; // New connections start from 0.
 
         while (true) {
-            $comments = get_comments(array(
+            $args = array(
                 'post_type' => 'freechat_room',
                 'post__in' => array_map('absint', $_GET['post__in']),
                 'number' => $limit,
                 'offset' => $offset,
                 'order' => 'ASC',
-            ));
+            );
+            // Restrict anonymous users to public rooms.
+            if (0 === get_current_user_id()) {
+                $args['post_status'] = 'publish';
+            }
+            $comments = get_comments($args);
             wp_cache_flush();
 
             if ($comments) {
@@ -60,8 +66,8 @@ class WP_FreeChat_EventStream_Server {
                 echo ":\n\n"; // Heartbeat.
             }
 
-            ob_end_flush();
-            flush();
+            @ob_end_flush();
+            @flush();
             sleep(1);
         }
 

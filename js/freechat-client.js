@@ -91,6 +91,11 @@ var WP_FREECHAT = (function () {
     var getRooms = function () {
         var rooms = new Rooms();
         rooms.fetch({
+            'data': {
+                'filter': {
+                    'post_status': 'publish,private'
+                }
+            },
             'success': listRooms,
             'error' : showErrorNotice
         });
