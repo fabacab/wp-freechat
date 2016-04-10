@@ -123,8 +123,15 @@ var WP_FREECHAT = (function () {
      * Opens a single room. Maybe subscribes to event stream.
      */
     var openRoom = function (e) {
+        var room_id = jQuery(this).data('id');
+
+        var old_room = jQuery('.freechat-room[data-id="' + room_id + '"]')
+        if (old_room.length) {
+            return;
+        }
+
         var t = document.getElementById('freechat-room-template');
-        jQuery(t.content.querySelector('.freechat-room')).attr('data-id', jQuery(this).data('id'));
+        jQuery(t.content.querySelector('.freechat-room')).attr('data-id', room_id);
         jQuery(t.content.querySelector('.freechat-room-name span')).text(this.textContent);
         var fragment = document.importNode(t.content, true);
         var el = fragment.querySelector('.freechat-room');
@@ -206,14 +213,16 @@ var WP_FREECHAT = (function () {
      */
     var handleSend = function (e) {
         var room = jQuery(this).parents('.freechat-room');
-        var msg = {
-            'post': room.data('id'),
-            'content': room.find('textarea').val()
-        };
-        var comment = new wp.api.models.Comment(msg);
-        comment.save({}, {
-            'error': showErrorNotice
-        });
+        var msg = room.find('textarea').val();
+        if (msg.length) {
+            var comment = new wp.api.models.Comment({
+                'post': room.data('id'),
+                'content': msg
+            });
+            comment.save({}, {
+                'error': showErrorNotice
+            });
+        }
         room.find('textarea').val('');
     };
 
