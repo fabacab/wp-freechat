@@ -35,8 +35,8 @@ class WP_FreeChat_EventStream_Server {
         // See http://nginx.org/en/docs/http/ngx_http_fastcgi_module.html#fastcgi_buffering
         header('X-Accel-Buffering: no');
 
-        $limit = 10; // Somewhat arbitrary.
-        $offset = (isset($_GET['offset'])) ? absint($_GET['offset']) : 0;
+        $limit = 10; // How many comments per batch. (Somewhat arbitrary.)
+        $offset = 0; // New connections start from 0.
 
         while (true) {
             $comments = get_comments(array(

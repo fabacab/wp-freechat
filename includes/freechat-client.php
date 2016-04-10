@@ -44,7 +44,7 @@
     </template><!-- #freechat-room-template -->
 
     <template id="freechat-message-template">
-        <li>
+        <li data-id="">
             <?php print get_avatar(0, 48);?>
             <span><?php esc_html_e('Sender Name', 'wp-freechat');?></span>
             <p><?php esc_html_e('Chat message here.', 'wp-freechat');?></p>

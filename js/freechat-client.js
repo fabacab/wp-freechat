@@ -164,12 +164,9 @@ var WP_FREECHAT = (function () {
      */
     var getEventSourceQuery = function () {
         var querystring = '';
-        var offset = 0;
         getOpenRooms().forEach(function (room_id) {
             querystring += '&post__in[]=' + encodeURIComponent(room_id);
-            offset += countMessages(room_id);
         });
-        querystring += '&offset=' + offset;
         return querystring;
     };
 
@@ -224,7 +221,15 @@ var WP_FREECHAT = (function () {
      * Adds a message to the chat room message list.
      */
     var appendMessage = function (model, response, options) {
+        // Abort if we've already displayed this message.
+        var old_msg = jQuery('.freechat-room[data-id="' + response.post + '"] li[data-id="' + response.id + '"]');
+        if (old_msg.length) {
+            return;
+        }
+
+        // Insert the message using the message template.
         var t = document.getElementById('freechat-message-template');
+        jQuery(t.content.querySelector('li')).attr('data-id', response.id);
         jQuery(t.content.querySelector('img.avatar'))
             .removeClass('avatar-default')
             .attr('src', response.author_avatar_urls['48'])
