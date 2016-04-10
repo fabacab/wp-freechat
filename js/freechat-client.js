@@ -178,6 +178,9 @@ var WP_FREECHAT = (function () {
         var querystring = '';
         getOpenRooms().forEach(function (room_id) {
             querystring += '&post__in[]=' + encodeURIComponent(room_id);
+            getLoadedMessages(room_id).forEach(function (msg_id) {
+                querystring += '&comment__not_in[]=' + encodeURIComponent(msg_id);
+            });
         });
         return querystring;
     };
@@ -193,6 +196,21 @@ var WP_FREECHAT = (function () {
             open_rooms.push(jQuery(this).data('id'));
         });
         return open_rooms;
+    };
+
+    /**
+     * Gets the messages already loaded in a room.
+     *
+     * @param {String} room_id
+     *
+     * @return {Array}
+     */
+    var getLoadedMessages = function (room_id) {
+        var msgs = [];
+        jQuery('.freechat-room[data-id="' + room_id + '"] li').each(function () {
+            msgs.push(jQuery(this).data('id'));
+        });
+        return msgs;
     };
 
     /**

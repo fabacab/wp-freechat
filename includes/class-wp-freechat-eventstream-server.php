@@ -43,6 +43,7 @@ class WP_FreeChat_EventStream_Server {
             $args = array(
                 'post_type' => 'freechat_room',
                 'post__in' => array_map('absint', $_GET['post__in']),
+                'comment__not_in' => (isset($_GET['comment__not_in'])) ? array_map('absint', $_GET['comment__not_in']) : '',
                 'number' => $limit,
                 'offset' => $offset,
                 'order' => 'ASC',
